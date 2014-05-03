@@ -2,7 +2,7 @@
 // @name           KomeponHS
 // @namespace      http://d.hatena.ne.jp/furyu-tei
 // @include        http://komepon.net/?u=*
-// @description    append Hatena Star containers to Komepon! ver.0.01
+// @description    append Hatena Star containers to Komepon! ver.0.01a
 // ==/UserScript==
 /*
   Download: https://github.com/furyutei/KomeponHS/raw/master/KomeponHS.user.js
@@ -44,7 +44,7 @@ var main = function(w, d){
 	
 	//{ global variables
 	var NAME_SCRIPT = 'KomeponHS';
-	var VER_SCRIPT = '0.01';
+	var VER_SCRIPT = '0.01a';
 	var $ = w.$;
 	
 	//{ check environment
@@ -90,12 +90,14 @@ var main = function(w, d){
 					if (0 < jq_title.find('hatena-star-add-button').size()) return;
 					var	jq_link = jq_title.contents('a');
 					if (jq_link.size() <= 0) return;
-					var	container = jq_title.get(0);
+					var	container = jq_title.get(0), cc = EntryLoader.createCommentContainer(), sc = EntryLoader.createStarContainer();
+					container.appendChild(cc);
+					container.appendChild(sc);
 					var	entry = {
 						uri: jq_link.attr('href')
 					,	title: Ten.DOM.scrapeText(jq_link.get(0))
-					,	star_container: container
-					,	comment_container: container
+					,	star_container: sc
+					,	comment_container: cc
 					};
 					entries[entries.length] = entry;
 					log_debug('[div#pi-title h2 a] '+entry.uri+' '+entry.title);
@@ -107,13 +109,16 @@ var main = function(w, d){
 					if (0 < jq_container.find('hatena-star-add-button').size()) return;
 					var	jq_link = jq_container.children('a');
 					if (jq_link.size() <= 0) return;
-					var	container = jq_container.get(0), jq_text = jq_comment.contents().filter(function(){return this.nodeType===3});
+					var	jq_text = jq_comment.contents().filter(function(){return this.nodeType===3});
+					var	container = jq_container.get(0), cc = EntryLoader.createCommentContainer(), sc = EntryLoader.createStarContainer();
+					container.appendChild(cc);
+					container.appendChild(sc);
 					var	entry = {
 						uri: jq_link.attr('href')
 					//,	title: jq_text.text()
 					,	title: Ten.DOM.scrapeText(jq_comment.get(0))
-					,	star_container: container
-					,	comment_container: container
+					,	star_container: sc
+					,	comment_container: cc
 					};
 					entries[entries.length] = entry;
 					log_debug(entry.uri+' '+entry.title);
